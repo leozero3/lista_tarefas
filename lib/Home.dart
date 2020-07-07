@@ -13,27 +13,38 @@ class _HomeState extends State<Home> {
 
   List _listaTarefas = [];
 
+  /// CONTROLE DOS TEXTOS DIGITADOS
+  TextEditingController _controllerTarefa = TextEditingController();
+  ///
+
   Future<File> _obterArquivo() async {
 
     final diretorio = await getApplicationDocumentsDirectory();
     return File( '${diretorio.path}/dados.json' );
   }
 
-  _salvarArquivo() async {
-
-    var arquivo = await _obterArquivo();
+  _salvarTarefa(){
+    String textoDigitado = _controllerTarefa.text;
 
     //criar dados na _listaTarefas
     Map<String, dynamic> tarefa = Map();
-    tarefa['titulo'] = 'Ir ao mercado';
-    tarefa['realizada'] = 'false';
+    tarefa['titulo'] = textoDigitado;
+    tarefa['realizada'] = false;
+
     _listaTarefas.add( tarefa );
+    _salvarArquivo();
+
+  }
+
+  _salvarArquivo() async {
+
+    var arquivo = await _obterArquivo();
 
     String dados = json.encode(_listaTarefas);
     arquivo.writeAsString(dados);
     //print('caminho : ' + diretorio.path );
   }
-
+///
   _lerArquivo() async {
 
     try{
@@ -83,7 +94,9 @@ class _HomeState extends State<Home> {
                 builder: (contexto){
                   return AlertDialog(
                     title: Text('Adicionar Tarefa'),
-                    content: TextField(decoration: InputDecoration(labelText: 'Digite sua Tarefa'),
+                    content: TextField(
+                      controller: _controllerTarefa,
+                      decoration: InputDecoration(labelText: 'Digite sua Tarefa'),
                     onChanged: (texto){
                     },),
                     actions: <Widget>[
